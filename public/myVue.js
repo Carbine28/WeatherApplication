@@ -27,17 +27,12 @@ function getWeatherData(){
                     // Fetch display for error
                     throw("Error in finding location");
                 }else {
-                    console.log(response);
+                    console.log(response.city);
                 }
 
             })
             .catch((err) => {
                 console.error(err);
             });
-
-        
     }
-    
-
-    
 }       

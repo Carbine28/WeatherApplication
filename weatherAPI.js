@@ -35,12 +35,12 @@ async function getWeather(req,res){
     
     url = `http://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&cnt=${numForecast}&appid=${apiKey}`;
     let weatherObject = await getLocationData(url); 
-    console.log(url);
+    //console.log(url); //debug
     url = `http://api.openweathermap.org/data/2.5/air_pollution/forecast?lat=${latitude}&lon=${longitude}&appid=${apiKey}`;
     let pollutionObject = await getAirPollution(url);
     
     let jsonData = {
-        "City"          : weatherObject.city,
+        "city"          : weatherObject.city,
         "weatherData"   : weatherObject.list,
         "pollutionData" : pollutionObject.list   
     }
