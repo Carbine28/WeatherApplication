@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Messing with Vue!</title>
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="styles.css">
+        <script type="importmap" defer>
+            {
+                "imports": {
+                    "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js"
+                }
+            }
+        </script>
+        <script src="myVue.js" type="module" defer></script>
+    </head>
+
+    <body>
+        <div class="header">
+            <div class="title">Welcome to my Weather Application </div>
+        </div>
+
+        <div id="app">
+            <div class="app-header">Enter your city name to display 4-day weather forecast</div>
+            <input type="text" v-model="cityValue"/>
+            <button class="app-button" v-on:click="getWeatherData">Search</button>
+            <p v-if="searching">Searching for weather in {{ cityValue }} now...</p>
+        </div>
+        
+    </body>
+</html>
