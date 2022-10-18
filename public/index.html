@@ -21,10 +21,20 @@
 
         <div id="app">
             <div class="app-header">Enter your city name to display 4-day weather forecast</div>
-            <input type="text" v-model="cityValue"/>
-            <button class="app-button" v-on:click="getWeatherData">Search</button>
-            
+            <div class="app-input">
+                <input type="text" placeholder="Type in ur city here!" v-model="cityValue"/>
+                <button class="app-button" v-on:click="getWeatherData">Search</button>
+            </div>
         </div>
+
+        <div id="appDisplay">
+            <div v-if="displayData" class="display">
+                Display Some Data Here
+            </div>
+        </div>
+        
+
+        <div class="footer"></div>
         
     </body>
 </html>

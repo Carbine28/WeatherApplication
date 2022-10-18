@@ -15,24 +15,33 @@ const app = createApp({
 
 app.mount("#app")
 
-function getWeatherData(){
-    if(this.cityValue.length == 0){
-        return;
-    } else{
-        let prom = fetch("fetchWeather/"+ this.cityValue);
-        this.cityValue = ""
-        prom.then( response => response.json() ) 
-            .then( response => {
-                if(response.empty){
-                    // Fetch display for error
-                    throw("Error in finding location");
-                }else {
-                    console.log(response.city);
-                }
+const key = document.querySelector(".app-button");
+key.addEventListener('transitionend', removeTransition);
 
-            })
-            .catch((err) => {
-                console.error(err);
-            });
-    }
+function removeTransition(event){
+    if(event.propertyName !== 'transform') return;
+    this.classList.remove("button-playing");
+}
+
+function getWeatherData(event){
+    if(this.cityValue.length == 0) return;
+    key.classList.add("button-playing");
+    
+    let prom = fetch("fetchWeather/"+ this.cityValue);
+    this.cityValue = ""
+    prom.then( response => response.json() ) 
+        .then( response => {
+            if(response.empty){
+                // Fetch display for error
+                throw("Error in finding location");
+            }else {
+                console.log(response.city);
+            }
+
+        })
+        .catch((err) => {
+            console.error(err);
+        });
+
+
 }       

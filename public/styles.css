@@ -2,7 +2,7 @@ body{
     display: flex;
     flex-direction: column;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    margin: 0px;
+    margin: 0;
     min-height: 100vh;
 }
 
@@ -18,12 +18,74 @@ body{
 }
 
 #app{
+    background-color: #E5E7EB;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+    user-select: none;
 }
 
 .app-header{
     font-size: 24px;
+    padding-bottom: 10px;
+}
+
+.app-input{
+    padding: 5px;
+    margin: 5px;
+}
+
+input{
+    border-color: black;
+    border: 1px solid #ddd;
+    border-radius: 16px;
+    padding: 8px 24px;
+    width: 400px;
+}
+
+.app-button{
+    font-family: Roboto, sans-serif;
+    border-style: none;
+    border-radius: 8px;
+    background: rgb(192, 190, 190);
+    margin-left: 20px;
+    padding: 5px;
+    transition: all 0.06s ease;
+}
+
+.button-playing{
+    transform: scale(1.1);
+    border-color: #3b3b39;
+    box-shadow: 0 0 1rem #706f6d;
+}
+
+/* Display div fills in space , makes footer bottom */
+#appDisplay{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex:1;
+}
+
+.display {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+    height: 500px;
+    
+    border-style: solid;
+}
+
+.footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #1F2937;
+    padding:30px;
+    color: white;
+    min-height:20px;
 }
 
