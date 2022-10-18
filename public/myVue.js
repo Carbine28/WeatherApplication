@@ -38,21 +38,21 @@ function getWeatherData(event){
     if(this.cityValue.length == 0) return;
     key.classList.add("button-playing");
 
-    // let prom = fetch("fetchWeather/"+ this.cityValue);
-    // 
-    // prom.then( response => response.json() ) 
-    //     .then( response => {
-    //         if(response.empty){
-    //             // Fetch display for error
-    //             throw("Error in finding location");
-    //         }else {
-    //             console.log(response.city);
-    //         }
+    let prom = fetch("fetchWeather/"+ this.cityValue);
+    
+    prom.then( response => response.json() ) 
+        .then( response => {
+            if(response.empty){
+                // Fetch display for error
+                throw("Error in finding location");
+            }else {
+                console.log(response);
+            }
 
-    //     })
-    //     .catch((err) => {
-    //         console.error(err);
-    //     });
+        })
+        .catch((err) => {
+            console.error(err);
+        });
 
     this.cityValue = "";
 }       

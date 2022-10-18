@@ -65,7 +65,7 @@ input{
 #appDisplay{
     display: flex;
     justify-content: center;
-    align-items: center;
+    margin-top: 100px;
     flex:1;
 }
 
@@ -82,11 +82,41 @@ input{
 .displayCard{
     display: flex;
     flex-direction: column;
-    padding: 90px;
-    margin-top: 20px;
+    
+    margin-top: 10px;
     margin-bottom: 20px;
-    border-style: solid;
+    border: 2px solid;
+    border-radius: 5px;
+    box-shadow: black;
+    box-shadow: 5px 10px 8px #888888;
+}
 
+.displayImage{
+    padding: 0px;
+    margin: 0px;
+    display: flex;
+    
+    height: 250px;
+    width: 270px;
+
+}
+
+.cardTitle{
+    display: flex;
+    justify-content: space-evenly;
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+.cardDescription{
+    width: 270px;
+    border-style: solid;
+    display: flex;
+    flex-direction: column;
+    word-wrap: break-word;
+    flex: 1;
+    font-size: 22px
 }
 
 .footer {
