@@ -5,15 +5,26 @@ const app = createApp({
         return{
             cityValue: "",
             searching:  false,
-            displayData: false
+            
         }
     },
     methods: {
         getWeatherData
     }
 });
+app.mount("#app");
 
-app.mount("#app")
+const display = createApp ({
+    data(){
+        return{
+            displayData: true,
+        }
+    },
+    methods: {
+
+    }
+});
+display.mount('#appDisplay');
 
 const key = document.querySelector(".app-button");
 key.addEventListener('transitionend', removeTransition);

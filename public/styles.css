@@ -71,13 +71,22 @@ input{
 
 .display {
     display: flex;
-    justify-content: center;
-    align-items: center;
     flex: 1;
+    justify-content: space-evenly;
     height: 500px;
-    margin-left: 100px;
-    margin-right: 100px;
+    margin-left: 200px;
+    margin-right: 200px;
+    /* border-style: solid; */
+}
+
+.displayCard{
+    display: flex;
+    flex-direction: column;
+    padding: 90px;
+    margin-top: 20px;
+    margin-bottom: 20px;
     border-style: solid;
+
 }
 
 .footer {
