@@ -22,7 +22,7 @@
         <div id="app">
             <div class="app-header">Enter your city name to display 4-day weather forecast</div>
             <div class="app-input">
-                <input type="text" placeholder="Type in ur city here!" v-model="cityValue"/>
+                <input type="text" placeholder="Type in your city here! (Format: city, ISO) " v-model="cityValue"/>
                 <button class="app-button" v-on:click="getWeatherData">Search</button>
             </div>
         </div>
