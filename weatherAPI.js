@@ -26,7 +26,7 @@ async function getWeather(req,res){
     let geoLocationObject = await getLocationData(url);
     if (!geoLocationObject.length){
         res.json({empty: 1});
-        console.log("Empty");
+        console.log("Error in finding geolocation, returning empty string to client");
         return;
     }
     // Set Geo Lat and Lon variables into url
@@ -35,7 +35,6 @@ async function getWeather(req,res){
     
     url = `http://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&cnt=${numForecast}&appid=${apiKey}`;
     let weatherObject = await getLocationData(url); 
-    //console.log(url); //debug
     url = `http://api.openweathermap.org/data/2.5/air_pollution/forecast?lat=${latitude}&lon=${longitude}&appid=${apiKey}`;
     let pollutionObject = await getAirPollution(url);
     
@@ -44,7 +43,18 @@ async function getWeather(req,res){
         "weatherData"   : weatherObject.list,
         "pollutionData" : pollutionObject.list   
     }
-    res.json(jsonData);
+
+    let sortedData = sortWeatherData(jsonData);
+    res.json(sortedData);
+}
+
+function sortWeatherData(jsonObj){
+    // Sort Data based on requirements.
+    // Sort weatherData into 4 days.
+    // bool for packing rain
+    // 
+
+
 }
 
 async function getAirPollution(url){
@@ -65,12 +75,8 @@ function getLocationData(url)
     
             res.on('end', function(){
                 if(res.statusCode === 200) {
-                    try{
-                        let jsonData = JSON.parse(data);
-                        resolve(jsonData)
-                    } catch (err){
-                        reject(err);
-                    }
+                    let jsonData = JSON.parse(data);
+                    resolve(jsonData);
                 } else{
                     reject(`Error getting location with status code ${res.statusCode}`)
                 }
