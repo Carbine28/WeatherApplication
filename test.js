@@ -1,4 +1,5 @@
 "use strict";
+const { create } = require('domain');
 const { json } = require('express');
 const fs = require('fs');
 const { resolve } = require('path');
@@ -47,11 +48,12 @@ const prom = new Promise((resolve) => {
     });
 });
 
+
 prom.then((val) => {
     
 
-    dayList = createDays(nDayForecast);
-    resolve(dayList);
+    sortWeatherData(val);
+
     
     //let jdayobject = JSON.stringify(dayObject);
     //console.log(Object.keys(dayObject.day[0].avgItems).length);
@@ -59,41 +61,74 @@ prom.then((val) => {
     
 })
 
-function createDays(numDays){
-    let dayList = [];
-    let day = {
-        "avgItems" : {
-            "avgWind" :  0,
-            "avgTemp" :  0,
-            "avgRain" :  0,
-            "avgPol"  :  0
-        },
-        "weatherType"  : "Null",
-        "packUmbrella" : false,
-        "isRaining"    : false
-    }
-    while(numDays){
-        dayList.push(day);
-        numDays--;
-    }
+async function sortWeatherData(data){
 
-    return dayList;
+    let dayList = await createDays(nDayForecast);
+    let sortedList = setDayData(dayList,data);
+    let jsonlist = JSON.stringify(sortedList);
+    
+    
 }
 
-// let dayIndex = 0;
-//     let dayCounter = 0;
-//     for (let i = 0; i < MAX_DAYS; i++){
-//         // Increase by 1 day for every 7 loops // Reset all variables
-//         if(dayCounter === 7){
-//             dayIndex++;
-//             dayCounter = 0;
-//         } 
-//         dayList[dayIndex].avgItems.avgWind +=  val[i].wind.speed;
+function createDays(numDays){
+    return new Promise((resolve) => {
+        let dayList = [];
+        let day = {
+            "avgItems" : {
+                "avgWind" :  0,
+                "avgTemp" :  0,
+                "avgRain" :  0,
+                "avgPol"  :  0
+            },
+            "weatherType"  : "Null",
+            "packUmbrella" : false,
+            "isRaining"    : false
+        }
+        while(numDays){
+            dayList.push(day);
+            numDays--;
+        }
+        resolve(dayList);
+    });
+}
+
+function setDayData(myList,data){
+    
+        let dayIndex = 0;
+        let dayCounter = 0;
+
+        let windSpeed = 0;
+        let tempSpeed = 0;
+        let rainSpeed = 0;
+
+        // console.log(myList[0].avgItems.avgWind );
+        for (let i = 0; i < MAX_DAYS; i++){
+            dayCounter++;
+            // Increase by 1 day for every 7 loops // Reset all variables
+            if(dayCounter === 7){
+                dayCounter = 0;
+                windSpeed = (windSpeed / 7).toFixed(2);
+                console.log(dayIndex);
+                myList[dayIndex].avgItems.avgWind = windSpeed;
+                console.log(myList[dayIndex].avgItems.avgWind)
+                windSpeed = 0;
+                tempSpeed = 0;
+                rainSpeed = 0;
+
+                dayIndex++;
+                
+            } 
+            // console.log(dayCounter);
+            //console.log(dayIndex);
+            windSpeed +=  data[i].wind.speed;
+            
+        }
+        console.log(myList);
+        return myList;
+    
+}
 
 
-//         dayCounter++;
-//     }
-//     console.log(dayList[0].avgItems.avgWind);
 
 
 

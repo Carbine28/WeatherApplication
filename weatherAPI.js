@@ -57,7 +57,8 @@ function sortWeatherData(jsonObj){
 
 }
 
-async function getAirPollution(url){
+//Remove async word here cause no use.
+function getAirPollution(url){
     return new Promise((resolve) => {
         resolve(getLocationData(url));
     });
