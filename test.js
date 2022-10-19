@@ -64,6 +64,7 @@ prom.then((val) => {
 async function sortWeatherData(data){
 
     let dayList = await createDays(nDayForecast);
+    console.log(dayList);
     let sortedList = await setDayData(dayList,data);
     let jsonlist = JSON.stringify(sortedList);
     
@@ -101,6 +102,8 @@ function setDayData(myList,data){
         let tempSpeed = 0;
         let rainSpeed = 0;
 
+        let tempList = myList;
+
         // console.log(myList[0].avgItems.avgWind );
         for (let i = 0; i < MAX_DAYS; i++){
             dayCounter++;
@@ -108,9 +111,11 @@ function setDayData(myList,data){
             if(dayCounter === 7){
                 dayCounter = 0;
                 windSpeed = (windSpeed / 7).toFixed(2);
-                console.log(dayIndex);
-                myList[dayIndex].avgItems.avgWind = windSpeed;
-                console.log(myList[dayIndex].avgItems.avgWind)
+                windSpeed = parseInt(windSpeed);
+                console.log(windSpeed);
+                if(dayIndex === 0) tempList[0].avgItems.avgWind = windSpeed;
+                
+                //console.log(tempList[dayIndex].avgItems.avgWind)
                 
                 windSpeed = 0;
                 tempSpeed = 0;
@@ -124,8 +129,11 @@ function setDayData(myList,data){
             windSpeed +=  data[i].wind.speed;
             
         }
+
+        
+        myList = tempList;
         console.log(myList);
-        resolve(myList);
+        resolve(tempList);
     })
         
 }

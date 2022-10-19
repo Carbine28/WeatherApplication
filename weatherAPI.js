@@ -54,7 +54,7 @@ function sortWeatherData(jsonObj){
     // bool for packing rain
     // 
 
-
+    // Should return a json string object.
 }
 
 //Remove async word here cause no use.
