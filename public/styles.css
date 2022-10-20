@@ -20,24 +20,39 @@ body{
 #app{
     background-color: #E5E7EB;
     display: flex;
+    flex:1;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
+    align-content: space-arounds;
     padding: 40px;
     user-select: none; 
 }
+.app-top{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+}
 
 .app-header{
+    display: flex;
+    justify-content: center;
     font-size: 24px;
     padding-bottom: 10px;
 }
 
 .app-input{
+    display: flex;
+    
+    justify-content: center;
+    align-items: center;
     padding: 5px;
     margin: 5px;
 }
 
 input{
+
     border-color: black;
     border: 1px solid #ddd;
     border-radius: 16px;
@@ -61,13 +76,31 @@ input{
     box-shadow: 0 0 1rem #706f6d;
 }
 
-/* Display div fills in space , makes footer bottom */
-#appDisplay{
-    display: flex;
-    justify-content: center;
-    margin-top: 100px;
+.displayNotes{
+    display:flex;
+    flex-direction: column;
     flex:1;
+    
 }
+
+
+
+.umbrellaDisplay,
+.maskDisplay{
+    display: flex;
+    
+    align-items: center;
+    border-radius: 12px;
+    padding: 20px;
+    margin:10px;
+    background-color: whitesmoke;
+}
+
+.exclamation{
+    margin-right: 10px;
+}
+
+
 
 .display {
     display: flex;
@@ -82,7 +115,7 @@ input{
 .displayCard{
     display: flex;
     flex-direction: column;
-    
+    margin-right: 40px;
     margin-top: 10px;
     margin-bottom: 20px;
     border: 2px solid;
@@ -97,7 +130,7 @@ input{
     display: flex;
     
     height: 250px;
-    width: 270px;
+    width: 280px;
 
 }
 
@@ -110,13 +143,17 @@ input{
 }
 
 .cardDescription{
-    width: 270px;
-    border-style: solid;
+    margin-top: 30px;
+    margin-left: 6px;
+    width: 260px;
+    /* border-style: solid; */
     display: flex;
     flex-direction: column;
+    
+    align-content: space-around;
     word-wrap: break-word;
     flex: 1;
-    font-size: 22px
+    font-size: 19px
 }
 
 .footer {

@@ -20,34 +20,52 @@
         </div>
 
         <div id="app">
-            <div class="app-header">Enter your city name to display 4-day weather forecast</div>
-            <div class="app-input">
-                <input type="text" placeholder="Type in your city here! (Format: city, ISO) " v-model="cityValue"/>
-                <button class="app-button" v-on:click="getWeatherData">Search</button>
+            <div class="app-top">
+                <div class="app-header">Enter your city name to display 4-day weather forecast</div>
+                <div class="app-input">
+                    <input type="text" placeholder="Type in your city here! (Format: city, ISO) " v-model="cityValue"/>
+                    <button class="app-button" v-on:click="getWeatherData">Search</button>
+                </div>
+            </div>
+            
+            <div class="displayNotes">
+                <div v-if="displayUmbrella" class="umbrellaDisplay">
+                    <img class="exclamation" width = "30" height = "30" src="exclamation.png" alt="!">
+                    <div class="umbrella">Make sure to pack an umbrella for the next few days!</div>
+                </div>
+                <div v-if="displayMask" class="maskDisplay">
+                    <img class="exclamation" width = "30" height = "30" src="exclamation.png" alt="!">
+                    <div class="mask">Be sure to wear a mask due to air pollution in the area!</div>
+                </div>
+            </div>
+
+            <div v-if="displayData" class="display">
+                <div id="dC1" class="displayCard">
+                    <img class="displayImage" v-bind:src="imgs[0]" alt="this is a placeholder for an image">
+                    <div class="cardTitle">Day 1</div>
+                    <div class="cardDescription" v-html="cardMessages[0]"></div>
+                </div>
+                <div id="dC2" class="displayCard">
+                    <img class="displayImage" v-bind:src="imgs[1]" alt="this is a placeholder for an image">
+                    <div class="cardTitle">Day 2</div>
+                    <div class="cardDescription" v-html="cardMessages[1]" ></div>
+                </div>
+                <div id="dC3" class="displayCard">
+                    <img class="displayImage" v-bind:src="imgs[2]" alt="this is a placeholder for an image">
+                    <div class="cardTitle">Day 3</div>
+                    <div class="cardDescription" v-html="cardMessages[2]" ></div>
+                </div>
+                <div id="dC4" class="displayCard">
+                    <img class="displayImage" v-bind:src="imgs[3]" alt="this is a placeholder for an image">
+                    <div class="cardTitle">Day 4</div>
+                    <div class="cardDescription" v-html="cardMessages[3]"></div>
+                </div>
             </div>
         </div>
 
-        <div id="appDisplay">
-            <div v-if="displayData" class="display">
-                <div class="displayCard">
-                    <img class="displayImage" src="cloudRain.jpg" alt="this is a placeholder for an image">
-                    <div class="cardTitle">Day 1</div>
-                    <div class="cardDescription">This is where I place the description</div>
-                </div>
-                <div class="displayCard">
-                    <img class="displayImage" src="placeholder.jpg" alt="this is a placeholder for an image">
-                    <div class="cardTitle">Day 2</div>
-                </div>
-                <div class="displayCard">
-                    <img class="displayImage" src="placeholder.jpg" alt="this is a placeholder for an image">
-                    <div class="cardTitle">Day 3</div>
-                </div>
-                <div class="displayCard">
-                    <img class="displayImage" src="placeholder.jpg" alt="this is a placeholder for an image">
-                    <div class="cardTitle">Day 4</div>
-                </div>
-            </div>
-        </div>
+        
+        
+        
         
 
         <div class="footer"></div>

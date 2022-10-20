@@ -33,65 +33,68 @@ async function getWeather(req,res){
     let latitude = geoLocationObject[0].lat;
     let longitude = geoLocationObject[0].lon;
     
-    url = `http://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&cnt=${numForecast}&appid=${apiKey}`;
+    url = `http://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&cnt=${numForecast}&appid=${apiKey}&units=metric`;
     let weatherObject = await getLocationData(url); 
     url = `http://api.openweathermap.org/data/2.5/air_pollution/forecast?lat=${latitude}&lon=${longitude}&appid=${apiKey}`;
     let pollutionObject = await getAirPollution(url);
     
     let jsonData = {
-        "city"          : weatherObject.city,
         "weatherData"   : weatherObject.list,
         "pollutionData" : pollutionObject.list   
     }
 
     let sortedData = sortWeatherData(jsonData);
-    //res.json(sortedData);
+    res.json(sortedData);
 }
 
 function sortWeatherData(jsonObj){
-    // Sort Data based on requirements.
-    // Sort weatherData into 4 days.
-    // bool for packing rain
-    // 
     let dayList = createDays(nDayForecast);
-    //console.log(dayList);
+    dayList = {...dayList, "wearMask" : false, "packUmbrella" : false, "days" : nDayForecast}
     let sortedList = setDayData(dayList,jsonObj)
-
-    // Should return a json string object.
+    return sortedList;
 }
 
 function setDayData(myList,jsonObj){
-    
     let dayIndex = 0;
     let dayCounter = 0;
-
-    //console.log(myList[0].avgItems);
     for (let i = 0; i < numForecast; i++){
         
-        // Increase by 1 day for every 7 loops // Reset all variables
-        if(dayCounter === 8){
-            dayCounter = 0;
-            // windSpeed = (windSpeed / 7).toFixed(2);
-            // //windSpeed = parseInt(windSpeed);
-            // console.log(windSpeed);
-            //myList[dayIndex].avgItems.avgWind = windSpeed;
-            //console.log(tempList[dayIndex].avgItems.avgWind)
-            dayIndex++;
-            
-        }
         if('rain' in jsonObj.weatherData[i]){
-            if(!myList[dayIndex].isRaining) myList[dayIndex].isRaining = true;
-            myList[dayIndex].avgItems.avgRain +=  jsonObj.weatherData[i].rain;
-            console.log(jsonObj.weatherData[i].rain)
+            if(!myList[dayIndex].isRaining){
+                myList[dayIndex].isRaining = true;
+                myList["packUmbrella"] = true;
+            } 
+            myList[dayIndex].avgItems.avgRain +=  jsonObj.weatherData[i].rain['3h'];
         }
-        
         myList[dayIndex].avgItems.avgWind +=  jsonObj.weatherData[i].wind.speed;
-        
-
+        myList[dayIndex].avgItems.avgTemp += jsonObj.weatherData[i].main.temp;
         dayCounter++;
-    }   
-    console.log(myList);
+        if(dayCounter === 8){ // Increase by 1 day for every 8 loops // Reset all variables
+            myList[dayIndex].avgItems.avgWind =  ((myList[dayIndex].avgItems.avgWind)/8).toFixed(2);
+            myList[dayIndex].avgItems.avgTemp =  (((myList[dayIndex].avgItems.avgTemp)/8)).toFixed(2);
+            if(myList[dayIndex].avgItems.avgTemp > 12 && myList[dayIndex].avgItems.avgTemp <= 24) myList[dayIndex].weatherType = "Mild";
+            else if (myList[dayIndex].avgItems.avgTemp < 12) myList[dayIndex].weatherType = "Cold";
+            else myList[dayIndex].weatherType = "Hot";
+            // 
+            if (myList[dayIndex].isRaining) myList[dayIndex].avgItems.avgRain =  ((myList[dayIndex].avgItems.avgRain)/8).toFixed(2);
+            dayCounter = 0;
+            dayIndex++;
+        }
+    }
+    myList = checkAirPollution(myList);
+    //console.log(myList);
     return myList;   
+}
+
+function checkAirPollution(myList){
+    for(hour in myList.pollutionData){
+        if(hour.components.pm2_5 > 10){
+            myList["wearMask"] = true;
+            return myList;
+        }
+    }
+    myList["wearMask"] = false;
+    return myList;
 }
 
 function createDays(numDays){
@@ -102,11 +105,9 @@ function createDays(numDays){
             "avgWind" :  0,
             "avgTemp" :  0,
             "avgRain" :  0,
-            "avgPol"  :  0
         },
         "weatherType"  : "Null",
-        "packUmbrella" : false,
-        "isRaining"    : false
+        "isRaining"    : false,
     }
     
     let clone;
