@@ -24,7 +24,11 @@
                 <div class="app-header">Enter your city name to display 4-day weather forecast</div>
                 <div class="app-input">
                     <input type="text" placeholder="Type in your city here! (Format: city, ISO) " v-model="cityValue"/>
-                    <button class="app-button" v-on:click="getWeatherData">Search</button>
+                    <div class="buttons-container">
+                        <button class="app-button" id="searchButton" v-on:click="getWeatherData">Search</button>
+                        <button class="app-button" id="randomButton" v-on:click="funkyWeatherData">I'm Feeling Funky</button>
+                    </div>
+                    
                 </div>
             </div>
             
@@ -35,32 +39,43 @@
                 </div>
                 <div v-if="displayMask" class="maskDisplay">
                     <img class="exclamation" width = "30" height = "30" src="exclamation.png" alt="!">
-                    <div class="mask">Be sure to wear a mask due to air pollution in the area!</div>
+                    <div >Be sure to wear a mask due to air pollution in the area!</div>
+                </div>
+
+                <div v-if="displayError" class="errorDisplay">
+                    <img class="exclamation" width = "30" height = "30" src="exclamation.png" alt="!">
+                    <div >Error: Location not found, try again!</div>
                 </div>
             </div>
 
             <div v-if="displayData" class="display">
-                <div id="dC1" class="displayCard">
-                    <img class="displayImage" v-bind:src="imgs[0]" alt="this is a placeholder for an image">
-                    <div class="cardTitle">Day 1</div>
-                    <div class="cardDescription" v-html="cardMessages[0]"></div>
+                <div class="displayCityTitle">{{ cityName }}</div>
+                <div class="displayCard-Container">
+                    <div id="dC1" class="displayCard">
+                        <img class="displayImage" v-bind:src="imgs[0]" alt="this is a placeholder for an image">
+                        <div class="cardTitle">Day 1</div>
+                        <div class="cardDescription" v-html="cardMessages[0]"></div>
+                    </div>
+                    <div id="dC2" class="displayCard">
+                        <img class="displayImage" v-bind:src="imgs[1]" alt="this is a placeholder for an image">
+                        <div class="cardTitle">Day 2</div>
+                        <div class="cardDescription" v-html="cardMessages[1]" ></div>
+                    </div>
+                    <div id="dC3" class="displayCard">
+                        <img class="displayImage" v-bind:src="imgs[2]" alt="this is a placeholder for an image">
+                        <div class="cardTitle">Day 3</div>
+                        <div class="cardDescription" v-html="cardMessages[2]" ></div>
+                    </div>
+                    <div id="dC4" class="displayCard">
+                        <img class="displayImage" v-bind:src="imgs[3]" alt="this is a placeholder for an image">
+                        <div class="cardTitle">Day 4</div>
+                        <div class="cardDescription" v-html="cardMessages[3]"></div>
+                    </div>
                 </div>
-                <div id="dC2" class="displayCard">
-                    <img class="displayImage" v-bind:src="imgs[1]" alt="this is a placeholder for an image">
-                    <div class="cardTitle">Day 2</div>
-                    <div class="cardDescription" v-html="cardMessages[1]" ></div>
-                </div>
-                <div id="dC3" class="displayCard">
-                    <img class="displayImage" v-bind:src="imgs[2]" alt="this is a placeholder for an image">
-                    <div class="cardTitle">Day 3</div>
-                    <div class="cardDescription" v-html="cardMessages[2]" ></div>
-                </div>
-                <div id="dC4" class="displayCard">
-                    <img class="displayImage" v-bind:src="imgs[3]" alt="this is a placeholder for an image">
-                    <div class="cardTitle">Day 4</div>
-                    <div class="cardDescription" v-html="cardMessages[3]"></div>
-                </div>
+                
             </div>
+
+            
         </div>
 
         

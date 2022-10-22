@@ -1,5 +1,4 @@
-
-import { createApp, Suspense } from 'vue';
+import { createApp} from 'vue';
 
 const app = createApp({
     data(){
@@ -8,18 +7,26 @@ const app = createApp({
             displayData: false,
             displayUmbrella: false,
             displayMask: false,
+            displayError: false,
 
+            cityName: "None",
             cardMessages: ["", "", "", ""],
             imgs: ["","","",""],
         }
     },
     methods: {
+        funkyWeatherData,
         getWeatherData,
         handleWeatherData(res){
-            if(res.empty) throw("Error in finding location");
+            if(res.empty){
+                this.displayError = true;
+                return;
+            } 
             //console.log(res);
             if(res.packUmbrella) this.displayUmbrella = true;
             if(res.wearMask) this.displayMask = true;
+            if(res.cityName) this.cityName = res.cityName;
+
 
             for (let i = 0; i < res.days; i++){
                 if(res[i].weatherType == "Cold") this.imgs[i] = "cold.jpg";
@@ -33,15 +40,15 @@ const app = createApp({
                 } 
             }
             
-
             this.displayData = true;
         }
     }
 });
 app.mount("#app");
 
-const key = document.querySelector(".app-button");
-key.addEventListener('transitionend', removeTransition);
+const keys = document.querySelectorAll(".app-button");
+keys.forEach(key => key.addEventListener('transitionend', removeTransition));
+
 
 function removeTransition(event){
     if(event.propertyName !== 'transform') return;
@@ -53,6 +60,8 @@ function getWeatherData(event){
     this.displayUmbrella = false;
     this.displayMask = false;
     this.displayData = false;
+    this.displayError = false;
+    const key = document.querySelector("#searchButton");
     key.classList.add("button-playing");
 
     let prom = fetch("fetchWeather/"+ this.cityValue);
@@ -66,5 +75,24 @@ function getWeatherData(event){
         });
 
     this.cityValue = "";
-    
 }       
+
+function funkyWeatherData(){
+    this.displayUmbrella = false;
+    this.displayMask = false;
+    this.displayData = false;
+    this.displayError = false;
+    const key = document.querySelector("#randomButton");
+    key.classList.add("button-playing");
+
+    let prom = fetch("fetchFunkyWeather/");
+    prom.then(response => response.json() )
+        .then(response => {
+            
+            this.handleWeatherData(response);
+        })
+        .catch((err) => {
+            console.error(err);
+        });
+    this.cityValue = "";
+}

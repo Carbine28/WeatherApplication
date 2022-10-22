@@ -2,7 +2,6 @@ const express = require('express');
 const path = require('path');
 const app = express();
 const http = require('http');
-const { response, json } = require('express');
 
 const port = 8080;
 const apiKey = "8fd481d84b99229254d57833341a80cb";
@@ -12,15 +11,25 @@ const numForecast = nDayForecast * 8; // 5 day 3 hour forecast. 8 Forecast per d
 
 const publicPath = path.resolve(__dirname, "public"); // Return absolute path to public dir 
 
+// MinMax values used to generate random location weather data
+const lonMin = -180;
+const lonMax = 180;
+const latMin = - 40;
+const latMax = 80;
+const maximumRetrys = 5; // Limit the amount of times getFunkyWeather attempts to get location
+
 // Middlewares
 app.use(express.static(publicPath));
 
 app.get('/fetchWeather/:cityName', getWeather);
 
+app.get('/fetchFunkyWeather', getFunkyWeather)
+
 app.listen(port,() => console.log(`Server running at http://localhost:${port}/`));
 
 async function getWeather(req,res){
     let city = req.params.cityName;
+
     let url = `http://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=${searchLimit}&appid=${apiKey}`;
     
     let geoLocationObject = await getLocationData(url);
@@ -40,16 +49,53 @@ async function getWeather(req,res){
     
     let jsonData = {
         "weatherData"   : weatherObject.list,
-        "pollutionData" : pollutionObject.list   
+        "pollutionData" : pollutionObject.list,
+        "cityData"      : weatherObject.city
     }
 
     let sortedData = sortWeatherData(jsonData);
     res.json(sortedData);
 }
 
+async function getFunkyWeather(req,res){
+    let latitude = getRandomLatLonValue(latMin,latMax);
+    let longitude = getRandomLatLonValue(lonMin,lonMax);
+    let url = `http://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&cnt=${numForecast}&appid=${apiKey}&units=metric`;
+    let weatherObject = await getLocationData(url);
+    if (!weatherObject.city.name){
+        let retryAttempts = 0;
+        while(!weatherObject.city.name){
+            latitude = getRandomLatLonValue(latMin,latMax);
+            longitude = getRandomLatLonValue(lonMin,lonMax);
+            url = `http://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&cnt=${numForecast}&appid=${apiKey}&units=metric`;
+            weatherObject = await getLocationData(url);
+            if (retryAttempts === maximumRetrys){
+                res.json({empty: 1});
+                
+                return;
+            }
+            retryAttempts++;
+        }
+    }
+    let pollutionObject = await getAirPollution(url);
+    
+    let jsonData = {
+        "weatherData"   : weatherObject.list,
+        "pollutionData" : pollutionObject.list,
+        "cityData"      : weatherObject.city
+    }
+
+    let sortedData = sortWeatherData(jsonData);
+    res.json(sortedData);
+}
+
+function getRandomLatLonValue(min, max){
+    return Math.random() * ( max - min ) + min;
+}
+
 function sortWeatherData(jsonObj){
     let dayList = createDays(nDayForecast);
-    dayList = {...dayList, "wearMask" : false, "packUmbrella" : false, "days" : nDayForecast}
+    dayList = {...dayList, "wearMask" : false, "packUmbrella" : false, "days" : nDayForecast, "cityName" : jsonObj.cityData.name + ", " + jsonObj.cityData.country};
     let sortedList = setDayData(dayList,jsonObj)
     return sortedList;
 }

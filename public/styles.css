@@ -25,7 +25,7 @@ body{
     justify-content: center;
     align-content: space-arounds;
     padding: 40px;
-    user-select: none; 
+    
 }
 .app-top{
     display: flex;
@@ -44,7 +44,7 @@ body{
 
 .app-input{
     display: flex;
-    
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     padding: 5px;
@@ -64,10 +64,20 @@ input{
     font-family: Roboto, sans-serif;
     border-style: none;
     border-radius: 8px;
-    background: rgb(192, 190, 190);
+    background: #dadfe5; 
     margin-left: 20px;
     padding: 5px;
     transition: all 0.06s ease;
+}
+
+.buttons-container{
+    display:flex;
+    justify-content: space-evenly;
+    align-items: center;
+    margin-top: 10px;
+    /* border: solid; */
+    padding-left: 5px;
+    padding-right: 5px;
 }
 
 .button-playing{
@@ -85,6 +95,8 @@ input{
 
 
 
+
+.errorDisplay,
 .umbrellaDisplay,
 .maskDisplay{
     display: flex;
@@ -104,12 +116,28 @@ input{
 
 .display {
     display: flex;
+    flex-direction: column;
     flex: 1;
-    justify-content: space-evenly;
+    
     height: 500px;
     margin-left: 200px;
     margin-right: 200px;
     /* border-style: solid; */
+}
+
+.displayCityTitle{
+    display: flex;
+    justify-content: center;
+    margin: 10px;
+    padding: 5px;
+    font-weight: bold;
+    font-size: 26px;
+}
+
+.displayCard-Container{
+    display: flex;
+    flex:1;
+    justify-content: space-evenly;
 }
 
 .displayCard{
