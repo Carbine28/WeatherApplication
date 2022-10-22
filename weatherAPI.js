@@ -18,7 +18,7 @@ const latMin = - 40;
 const latMax = 80;
 const maximumRetrys = 5; // Limit the amount of times getFunkyWeather attempts to get location
 
-// Middlewares
+// Middleware to serve static pages (html,css,images)
 app.use(express.static(publicPath));
 
 app.get('/fetchWeather/:cityName', getWeather);
@@ -27,12 +27,13 @@ app.get('/fetchFunkyWeather', getFunkyWeather)
 
 app.listen(port,() => console.log(`Server running at http://localhost:${port}/`));
 
+// handler for weather search request of a specified location
 async function getWeather(req,res){
     let city = req.params.cityName;
 
     let url = `http://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=${searchLimit}&appid=${apiKey}`;
     
-    let geoLocationObject = await getLocationData(url);
+    let geoLocationObject = await getLocationData(url); // First fetch latitude and longitiude values using geoLocationAPI
     if (!geoLocationObject.length){
         res.json({empty: 1});
         console.log("Error in finding geolocation, returning empty string to client");
@@ -42,21 +43,24 @@ async function getWeather(req,res){
     let latitude = geoLocationObject[0].lat;
     let longitude = geoLocationObject[0].lon;
     
+    // Fetch weather and pollution 5 day 3h forecast
     url = `http://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&cnt=${numForecast}&appid=${apiKey}&units=metric`;
     let weatherObject = await getLocationData(url); 
     url = `http://api.openweathermap.org/data/2.5/air_pollution/forecast?lat=${latitude}&lon=${longitude}&appid=${apiKey}`;
     let pollutionObject = await getAirPollution(url);
     
+    // Extract needed data from openWeather json object
     let jsonData = {
         "weatherData"   : weatherObject.list,
         "pollutionData" : pollutionObject.list,
         "cityData"      : weatherObject.city
     }
-
-    let sortedData = sortWeatherData(jsonData);
-    res.json(sortedData);
+    // Sort the data
+    let sortedData = sortWeatherData(jsonData); 
+    res.json(sortedData); // Send data pre sorted to client browser to display.
 }
 
+// handler for getting a random location's weather data
 async function getFunkyWeather(req,res){
     let latitude = getRandomLatLonValue(latMin,latMax);
     let longitude = getRandomLatLonValue(lonMin,lonMax);
@@ -93,18 +97,19 @@ function getRandomLatLonValue(min, max){
     return Math.random() * ( max - min ) + min;
 }
 
+// Sorts and calculates required data to send to client
 function sortWeatherData(jsonObj){
     let dayList = createDays(nDayForecast);
     dayList = {...dayList, "wearMask" : false, "packUmbrella" : false, "days" : nDayForecast, "cityName" : jsonObj.cityData.name + ", " + jsonObj.cityData.country};
     let sortedList = setDayData(dayList,jsonObj)
     return sortedList;
 }
-
+// Calculates and finds the average data values for wind, rain and temp. also checks for air pollution
 function setDayData(myList,jsonObj){
     let dayIndex = 0;
     let dayCounter = 0;
     for (let i = 0; i < numForecast; i++){
-        
+        // Checks for rain, sets a bool flag if true. 
         if('rain' in jsonObj.weatherData[i]){
             if(!myList[dayIndex].isRaining){
                 myList[dayIndex].isRaining = true;
@@ -112,16 +117,18 @@ function setDayData(myList,jsonObj){
             } 
             myList[dayIndex].avgItems.avgRain +=  jsonObj.weatherData[i].rain['3h'];
         }
+
         myList[dayIndex].avgItems.avgWind +=  jsonObj.weatherData[i].wind.speed;
         myList[dayIndex].avgItems.avgTemp += jsonObj.weatherData[i].main.temp;
         dayCounter++;
         if(dayCounter === 8){ // Increase by 1 day for every 8 loops // Reset all variables
-            myList[dayIndex].avgItems.avgWind =  ((myList[dayIndex].avgItems.avgWind)/8).toFixed(2);
+            myList[dayIndex].avgItems.avgWind =  ((myList[dayIndex].avgItems.avgWind)/8).toFixed(2); // Calclates average value within a day and rounds it to 2 decimals
             myList[dayIndex].avgItems.avgTemp =  (((myList[dayIndex].avgItems.avgTemp)/8)).toFixed(2);
+            // Set weather type
             if(myList[dayIndex].avgItems.avgTemp > 12 && myList[dayIndex].avgItems.avgTemp <= 24) myList[dayIndex].weatherType = "Mild";
             else if (myList[dayIndex].avgItems.avgTemp < 12) myList[dayIndex].weatherType = "Cold";
             else myList[dayIndex].weatherType = "Hot";
-            // 
+
             if (myList[dayIndex].isRaining) myList[dayIndex].avgItems.avgRain =  ((myList[dayIndex].avgItems.avgRain)/8).toFixed(2);
             dayCounter = 0;
             dayIndex++;
@@ -132,6 +139,7 @@ function setDayData(myList,jsonObj){
     return myList;   
 }
 
+// Detects for air pollution given a sorted list. Sets a boolean flag if air pol > 10
 function checkAirPollution(myList){
     for(hour in myList.pollutionData){
         if(hour.components.pm2_5 > 10){
@@ -142,7 +150,7 @@ function checkAirPollution(myList){
     myList["wearMask"] = false;
     return myList;
 }
-
+// creates a day object and places it inside an array. Array with N amount of days is returned.
 function createDays(numDays){
     
     let dayList = [];
@@ -167,13 +175,13 @@ function createDays(numDays){
     return(clone);
 }
 
-//Remove async word here cause no use.
+// Fetch air pollution using openweather pollution API
 function getAirPollution(url){
     return new Promise((resolve) => {
         resolve(getLocationData(url));
     });
 }
-
+// Function takes in a url link and fetchs JSON data from it. Used for all openweather API calls
 function getLocationData(url) 
 {
     return new Promise((resolve,reject) => {

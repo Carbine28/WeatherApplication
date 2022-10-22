@@ -18,6 +18,7 @@ const app = createApp({
         funkyWeatherData,
         getWeatherData,
         handleWeatherData(res){
+            // Sort data to display if not empty
             if(res.empty){
                 this.displayError = true;
                 return;
@@ -26,7 +27,6 @@ const app = createApp({
             if(res.packUmbrella) this.displayUmbrella = true;
             if(res.wearMask) this.displayMask = true;
             if(res.cityName) this.cityName = res.cityName;
-
 
             for (let i = 0; i < res.days; i++){
                 if(res[i].weatherType == "Cold") this.imgs[i] = "cold.jpg";
@@ -46,15 +46,14 @@ const app = createApp({
 });
 app.mount("#app");
 
+//  Add event for button transition
 const keys = document.querySelectorAll(".app-button");
 keys.forEach(key => key.addEventListener('transitionend', removeTransition));
-
-
 function removeTransition(event){
     if(event.propertyName !== 'transform') return;
     this.classList.remove("button-playing");
 }
-
+// Event handler for when user presses the search button to look for weather data.
 function getWeatherData(event){
     if(this.cityValue.length == 0) return;
     this.displayUmbrella = false;
@@ -76,7 +75,7 @@ function getWeatherData(event){
 
     this.cityValue = "";
 }       
-
+// Event handler for when user presses the funky button to look for weather data from a random location
 function funkyWeatherData(){
     this.displayUmbrella = false;
     this.displayMask = false;
