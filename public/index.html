@@ -21,7 +21,7 @@
 
         <div id="app">
             <div class="app-top">
-                <div class="app-header">Enter your city name to display 4-day weather forecast</div>
+                <div class="app-header">Enter city name to display 4-day weather forecast</div>
                 <div class="app-input">
                     <input type="text" placeholder="Type in your city here! (Format: city, ISO) " v-model="cityValue"/>
                     <div class="buttons-container">
@@ -30,6 +30,34 @@
                     </div>
                     
                 </div>
+            </div>
+
+            <div v-if="displayFunkySelection" class="displayFunkySelection-Container">
+                <div class="displayFunkyCard">
+                    <div class="funkyCardTitle"> City: {{ funkyCityNames[0]}} </div>
+                    <button  v-on:click="handleFunkyData(0)" class="funkyCardButton"> Show Weather Data for {{ funkyCityNames[0]}} </button>
+                </div>
+
+                <div class="displayFunkyCard">
+                    <div class="funkyCardTitle"> City: {{ funkyCityNames[1]}} </div>
+                    <button  v-on:click="handleFunkyData(1)" class="funkyCardButton"> Show Weather Data for {{ funkyCityNames[1]}} </button>
+                </div>
+
+                <div class="displayFunkyCard">
+                    <div class="funkyCardTitle"> City: {{ funkyCityNames[2]}} </div>
+                    <button  v-on:click="handleFunkyData(2)" class="funkyCardButton"> Show Weather Data for {{ funkyCityNames[2]}} </button>
+                </div>
+
+                <div class="displayFunkyCard">
+                    <div class="funkyCardTitle"> City: {{ funkyCityNames[3]}} </div>
+                    <button v-on:click="handleFunkyData(3)" class="funkyCardButton"> Show Weather Data for {{ funkyCityNames[3]}} </button>
+                </div>
+
+                <div class="displayFunkyCard">
+                    <div class="funkyCardTitle"> City: {{ funkyCityNames[4]}} </div>
+                    <button  v-on:click="handleFunkyData(4)" class="funkyCardButton"> Show Weather Data for {{ funkyCityNames[4]}} </button>
+                </div>
+                
             </div>
             
             <div class="displayNotes">
@@ -47,6 +75,8 @@
                     <div >Error: Location not found, try again!</div>
                 </div>
             </div>
+            
+            
 
             <div v-if="displayData" class="display">
                 <div class="displayCityTitle">{{ cityName }}</div>
@@ -73,6 +103,8 @@
                     </div>
                 </div>
             </div>
+
+
 
         </div>
 

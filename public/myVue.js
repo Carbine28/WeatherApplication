@@ -8,10 +8,14 @@ const app = createApp({
             displayUmbrella: false,
             displayMask: false,
             displayError: false,
-
+            
             cityName: "None",
             cardMessages: ["", "", "", ""],
             imgs: ["","","",""],
+
+            displayFunkySelection: false,
+            funkyCityNames: ["","","","",""] ,
+            citysData: [],
         }
     },
     methods: {
@@ -36,11 +40,24 @@ const app = createApp({
                                      Average Temperature: ${res[i].avgItems.avgTemp} ℃<br>
                                      Average Wind Speed: ${res[i].avgItems.avgWind} m/s<br>`;
                 if (res[i].isRaining){
-                    this.cardMessages[i] += `Average Rainfall: ${res[i].avgItems.avgRain} mm/3hr<br>`;
+                    this.cardMessages[i] += `Average Rainfall: ${res[i].avgItems.avgRain} mm<br>`;
                 } 
             }
             
             this.displayData = true;
+        },
+        loadFunkyData(res){
+            // Load response data into vue variables
+            for(let i = 0; i < res.length; i++){
+                this.citysData[i] = res[i];
+                this.funkyCityNames[i] = res[i].cityName;
+            } 
+            this.displayFunkySelection = true; // Then display div with selection
+        },
+        handleFunkyData(index){
+            this.displayFunkySelection = false;
+            this.handleWeatherData(this.citysData[index]);
+            
         }
     }
 });
@@ -87,8 +104,8 @@ function funkyWeatherData(){
     let prom = fetch("fetchFunkyWeather/");
     prom.then(response => response.json() )
         .then(response => {
-            
-            this.handleWeatherData(response);
+            //this.loadFunkyData(response);
+            console.log(response);
         })
         .catch((err) => {
             console.error(err);

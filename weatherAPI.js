@@ -16,13 +16,12 @@ const lonMin = -180;
 const lonMax = 180;
 const latMin = - 40;
 const latMax = 80;
-const maximumRetrys = 5; // Limit the amount of times getFunkyWeather attempts to get location
-
+const maximumRetrys = 10; // Limit the amount of times getFunkyWeather attempts to get location
+const maximumCitiesAllowed = 5;
 // Middleware to serve static pages (html,css,images)
 app.use(express.static(publicPath));
 
-app.get('/fetchWeather/:cityName', getWeather);
-
+app.get('/fetchWeather/:cityName', getWeather); 
 app.get('/fetchFunkyWeather', getFunkyWeather)
 
 app.listen(port,() => console.log(`Server running at http://localhost:${port}/`));
@@ -62,35 +61,59 @@ async function getWeather(req,res){
 
 // handler for getting a random location's weather data
 async function getFunkyWeather(req,res){
-    let latitude = getRandomLatLonValue(latMin,latMax);
-    let longitude = getRandomLatLonValue(lonMin,lonMax);
-    let url = `http://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&cnt=${numForecast}&appid=${apiKey}&units=metric`;
-    let weatherObject = await getLocationData(url);
-    if (!weatherObject.city.name){
-        let retryAttempts = 0;
-        while(!weatherObject.city.name){
-            latitude = getRandomLatLonValue(latMin,latMax);
-            longitude = getRandomLatLonValue(lonMin,lonMax);
-            url = `http://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&cnt=${numForecast}&appid=${apiKey}&units=metric`;
-            weatherObject = await getLocationData(url);
-            if (retryAttempts === maximumRetrys){
-                res.json({empty: 1});
-                
-                return;
-            }
-            retryAttempts++;
-        }
-    }
-    let pollutionObject = await getAirPollution(url);
+    let cityCounter = 0;
+    let citysWeatherArray = [];
+    let pollutionArray = [];
+    let cityNameArray = [];
+    let latitude;
+    let longitude; 
+    let url;
     
-    let jsonData = {
-        "weatherData"   : weatherObject.list,
-        "pollutionData" : pollutionObject.list,
-        "cityData"      : weatherObject.city
+    // Finds 5 random cities and fetches their data into weather arrays
+    for(let i = 0; i < maximumCitiesAllowed; i++){
+        latitude = getRandomLatLonValue(latMin,latMax);
+        longitude = getRandomLatLonValue(lonMin,lonMax);
+        url = `http://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&cnt=${numForecast}&appid=${apiKey}&units=metric`;
+        let weatherObject = await getLocationData(url);
+        if (!weatherObject.city.name){
+            let retryAttempts = 0;
+            while(!weatherObject.city.name){
+                latitude = getRandomLatLonValue(latMin,latMax);
+                longitude = getRandomLatLonValue(lonMin,lonMax);
+                url = `http://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&cnt=${numForecast}&appid=${apiKey}&units=metric`;
+                weatherObject = await getLocationData(url);
+                if (retryAttempts === maximumRetrys) break;
+                retryAttempts++;
+            }
+        }
+        url = `http://api.openweathermap.org/data/2.5/air_pollution/forecast?lat=${latitude}&lon=${longitude}&appid=${apiKey}`;
+        let pollutionObject = await getAirPollution(url);
+        citysWeatherArray.push(weatherObject);
+        pollutionArray.push(pollutionObject);
+        cityNameArray.push(weatherObject.city);
+        cityCounter++;
+    }
+     
+    let cityData = {
+        "weatherData"   : citysWeatherArray,
+        "pollutionData" : pollutionArray,
+        "cityNameData"      : cityNameArray,
     }
 
-    let sortedData = sortWeatherData(jsonData);
-    res.json(sortedData);
+    // Sorts each random cities weather data 
+    let sortedCityArray = [];
+    for (let i = 0; i <  cityCounter; i++){
+        // Seperate into one json object to reuse sortWeatherData
+        let jsonData = {
+            "weatherData"   : cityData.weatherData[i].list,
+            "pollutionData" : cityData.pollutionData[i].list,
+            "cityData"      : cityData.cityNameData[i]
+        }
+        //console.log(jsonData.pollutionData);
+        sortedData = sortWeatherData(jsonData);
+        sortedCityArray.push(sortedData);    // Push sorted object into array
+    }
+    res.json(sortedCityArray); // Send array of sorted objects to client to display
 }
 
 function getRandomLatLonValue(min, max){
@@ -134,22 +157,13 @@ function setDayData(myList,jsonObj){
             dayIndex++;
         }
     }
-    myList = checkAirPollution(myList);
+    let sortedList;
+    sortedList = checkAirPollution(myList,jsonObj.pollutionData);
+    
     //console.log(myList);
-    return myList;   
+    return sortedList;   
 }
 
-// Detects for air pollution given a sorted list. Sets a boolean flag if air pol > 10
-function checkAirPollution(myList){
-    for(hour in myList.pollutionData){
-        if(hour.components.pm2_5 > 10){
-            myList["wearMask"] = true;
-            return myList;
-        }
-    }
-    myList["wearMask"] = false;
-    return myList;
-}
 // creates a day object and places it inside an array. Array with N amount of days is returned.
 function createDays(numDays){
     
@@ -173,6 +187,23 @@ function createDays(numDays){
     //console.log(JSON.stringify(dayList));
     clone = JSON.parse(JSON.stringify(dayList))
     return(clone);
+}
+
+// Detects for air pollution given a sorted list. Sets a boolean flag if air pol > 10
+function checkAirPollution(myList,jsonObject){
+
+    for(let i = 0; i < jsonObject.length; i++){
+        console.log(jsonObject[i].components.pm2_5);
+        if(jsonObject[i].components["pm2_5"] > 10){
+            myList["wearMask"] = true;
+            return myList;
+        }
+        
+    }
+    //console.log(JSON.stringify(jsonObject));
+    
+    myList["wearMask"] = false;
+    return myList;
 }
 
 // Fetch air pollution using openweather pollution API
