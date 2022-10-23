@@ -193,15 +193,12 @@ function createDays(numDays){
 function checkAirPollution(myList,jsonObject){
 
     for(let i = 0; i < jsonObject.length; i++){
-        console.log(jsonObject[i].components.pm2_5);
+        //console.log(jsonObject[i].components.pm2_5);
         if(jsonObject[i].components["pm2_5"] > 10){
             myList["wearMask"] = true;
             return myList;
         }
-        
     }
-    //console.log(JSON.stringify(jsonObject));
-    
     myList["wearMask"] = false;
     return myList;
 }
