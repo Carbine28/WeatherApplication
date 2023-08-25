@@ -8,7 +8,7 @@ A weather application created using Express and Vue.JS. The web application uses
 - Vue.JS
 
 ## Installation
-1. Perform `git clone https://github.com/Carbine28/InternetAppAssign01.git`
+1. Perform `git clone https://github.com/Carbine28/WeatherApplication.git`
 2. Enter folder direction and enter the install the following node packages.
 - `npm install express axios`
 - `npm install -g @vue/cli`
